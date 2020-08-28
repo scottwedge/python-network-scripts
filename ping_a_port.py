@@ -3,7 +3,7 @@ import socket
 
 def main():
     # Command Line Parser
-    parser = ArgumentParser(add_help=False,description="Listen to a port on the current network")
+    parser = ArgumentParser(add_help=False,description="Ping a port on the current network")
     requiredArgs = parser.add_argument_group("required arguments")
     optionalArgs = parser.add_argument_group("optional arguments")
     # Adding All Command Line Arguments
@@ -22,19 +22,9 @@ def main():
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print(f'Socket successfully created')
-
-        s.bind((socket.gethostname(), port))
-        print(f'Socket binded to {port}')
-
-        s.listen(5)
-        print(f'Socket is listening')
-
-        while True:
-            clientsocket, address = s.accept()
-            print(f"Connection from {address} has been established.")
-            #clientsocket.send(bytes("Message from server, Hello!","utf-8"))
-            clientsocket.close()
+        s.connect((socket.gethostname(), port))
+        #msg = s.recv(1024)
+        #print(msg.decode("utf-8"))
 
     except socket.error as err:
         print(f'Socket creation failed with error {err}')
