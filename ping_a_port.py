@@ -19,7 +19,6 @@ def main():
         s.connect((socket.gethostname(), port))
         msg = s.recv(1024)
         print("Message from Server: " + msg.decode("utf-8"))
-
     except socket.error as err:
         print(f'Socket creation failed with error {err}')
     except:
