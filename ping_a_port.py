@@ -17,10 +17,10 @@ def main():
     args = vars(parser.parse_args())
 
     port = int(args["port"])
-    address = str(args["server"])
+    address = args["server"]
     logpath = str(args["logfile"])
 
-    logging.basicConfig(filename=logpath, filemode='w', format='%(asctime)s | %(levelname)s : %(message)s', datefmt='%d-%B-%Y %H:%M:%S')
+    logging.basicConfig(level=logging.NOTSET,filename=logpath,filemode='w',format='%(asctime)s | %(levelname)s : %(message)s',datefmt='%d-%B-%Y %H:%M:%S')
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,11 +29,19 @@ def main():
         logging.info(f'Socket connected to {address}, {port}.')
         msg = s.recv(1024)
         logging.info(f'Message from server: {msg.decode("utf-8")}.')
-    except socket.error as err:
-        logging.error(f'Socket creation failed with error {err}.')
-    except:
-        logging.error(f'Unknown error has occured with socket.')
 
+    except socket.error as err:
+        logging.error(f'Socket failed with error {err}.')
+    except socket.herror:
+        logging.error(f'Socket failed with an address herror.')
+    except socket.gaierror:
+        logging.error(f'Socket failed with an address gaierror.')
+    except socket.timeout:
+        logging.error(f'Socket failed with a timeout error.')
+    except KeyboardInterrupt:
+        logging.error(f'Socket connection manually closed.')
+    except:
+        logging.error(f'Socket unknown error occured.')
 
 if __name__ == '__main__':
     main()

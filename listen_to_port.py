@@ -18,7 +18,7 @@ def main():
     port = int(args["port"])
     logpath = str(args["logfile"])
 
-    logging.basicConfig(filename=logpath, filemode='w', format='%(asctime)s | %(levelname)s : %(message)s', datefmt='%d-%B-%Y %H:%M:%S')
+    logging.basicConfig(level=logging.NOTSET,filename=logpath,filemode='w',format='%(asctime)s | %(levelname)s : %(message)s',datefmt='%d-%B-%Y %H:%M:%S')
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,17 +29,27 @@ def main():
         logging.info(f'Socket is listening.')
 
         while True:
-            clientsocket, address = s.accept()
-            logging.info(f'Connection from {address} has been established.')
-            logging.info(f'Sent a message to that address.')
-            clientsocket.send(bytes("Hello!","utf-8"))
-            clientsocket.close()
+            try:
+                clientsocket, address = s.accept()
+                logging.info(f'Connection from {address} has been established.')
+                logging.info(f'Sent a message to that address.')
+                clientsocket.send(bytes("Hello!","utf-8"))
+                clientsocket.close()
+            except (BlockingIOError, InterruptedError, ConnectionAbortedError):
+                pass
 
     except socket.error as err:
-        logging.error(f'Socket creation failed with error {err}.')
+        logging.error(f'Socket failed with error {err}.')
+    except socket.herror:
+        logging.error(f'Socket failed with an address herror.')
+    except socket.gaierror:
+        logging.error(f'Socket failed with an address gaierror.')
+    except socket.timeout:
+        logging.error(f'Socket failed with a timeout error.')
+    except KeyboardInterrupt:
+        logging.error(f'Socket connection manually closed.')
     except:
-        logging.error(f'Unknown error has occured with Socket.')
-
+        logging.error(f'Socket unknown error occured.')
 
 if __name__ == '__main__':
     main()
