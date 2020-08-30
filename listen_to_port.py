@@ -15,9 +15,11 @@ def main():
     # Getting All Arugments
     args = vars(parser.parse_args())
 
+    # Relaying ALL Arguments into Variables
     port = int(args["port"])
     logpath = str(args["logfile"])
 
+    # Logging Setup
     logging.basicConfig(level=logging.NOTSET,filename=logpath,filemode='w',format='%(asctime)s | %(levelname)s : %(message)s',datefmt='%d-%B-%Y %H:%M:%S')
 
     try:
@@ -32,8 +34,13 @@ def main():
             try:
                 clientsocket, address = s.accept()
                 logging.info(f'Connection from {address} has been established.')
-                logging.info(f'Sent a message to that address.')
-                clientsocket.send(bytes("Hello!","utf-8"))
+
+                head = clientsocket.recv(16)
+                body = clientsocket.recv(8)
+
+                logging.info(f'Head of Packet Received: {head}')
+                logging.info(f'Body of Packet Received: {body}')
+
                 clientsocket.close()
             except (BlockingIOError, InterruptedError, ConnectionAbortedError):
                 pass
